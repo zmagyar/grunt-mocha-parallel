@@ -10,10 +10,10 @@ module.exports = function(suite) {
       console.error(title);
     }
     context.describe.skip = function(title, fn) {
-      return describe.skip(title, fn);
+      console.error(title);
     };
     context.describe.only = function(title, fn) {
-      return describe.only(title, fn);
+      console.error(title);
     }
   });
 };

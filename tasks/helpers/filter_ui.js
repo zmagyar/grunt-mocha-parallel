@@ -19,7 +19,7 @@ module.exports = function(suite) {
       return describe.skip(title, fn);
     };
     context.describe.only = function(title, fn) {
-      return describe.only(title, fn);
+      return context.describe(title, fn);
     }
   });
 };

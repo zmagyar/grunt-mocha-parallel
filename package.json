@@ -1,7 +1,7 @@
 {
   "name": "grunt-mocha-parallel",
   "description": "A Grunt task for running mocha test suites in parallel",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "homepage": "https://github.com/jkp/grunt-mocha-parallel",
   "author": {
     "name": "Jamie Kirkpatrick",
