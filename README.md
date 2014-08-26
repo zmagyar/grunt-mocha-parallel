@@ -3,15 +3,21 @@
 > A Grunt task for running mocha test suites in parallel
 
 ## Getting Started
+
 This plugin requires Grunt `~0.4.5`
 
-If you haven't used [Grunt](http://gruntjs.com/) before, be sure to check out the [Getting Started](http://gruntjs.com/getting-started) guide, as it explains how to create a [Gruntfile](http://gruntjs.com/sample-gruntfile) as well as install and use Grunt plugins. Once you're familiar with that process, you may install this plugin with this command:
+If you haven't used [Grunt](http://gruntjs.com/) before, be sure to check out
+the [Getting Started](http://gruntjs.com/getting-started) guide, as it explains
+how to create a [Gruntfile](http://gruntjs.com/sample-gruntfile) as well as
+install and use Grunt plugins. Once you're familiar with that process, you may
+install this plugin with this command:
 
 ```shell
 npm install grunt-mocha-parallel --save-dev
 ```
 
-Once the plugin has been installed, it may be enabled inside your Gruntfile with this line of JavaScript:
+Once the plugin has been installed, it may be enabled inside your Gruntfile with
+this line of JavaScript:
 
 ```js
 grunt.loadNpmTasks('grunt-mocha-parallel');
@@ -20,16 +26,26 @@ grunt.loadNpmTasks('grunt-mocha-parallel');
 ## The "mocha_parallel" task
 
 ### Overview
-In your project's Gruntfile, add a section named `mocha_parallel` to the data object passed into `grunt.initConfig()`.
+
+In your project's Gruntfile, add a section named `mocha_parallel` to the data
+object passed into `grunt.initConfig()`.
 
 ```js
 grunt.initConfig({
   mocha_parallel: {
     options: {
-      // Task-specific options go here.
-    },
-    your_target: {
-      // Target-specific file lists and/or options go here.
+      args: function(suiteName) {
+        return [];
+      },
+      env: function(suiteName) {
+        return process.env;
+      },
+      report: function(suite, code, stdout, stderr) {
+      },
+      done: function(success, results) {
+      },
+      mocha: './node_modules/.bin/mocha',
+      concurrency: os.cpus().length,
     },
   },
 });
@@ -37,53 +53,72 @@ grunt.initConfig({
 
 ### Options
 
-#### options.separator
+#### options.args
+
+Type: `Function`
+Default value: A function that returns an empty list.
+
+A function that should return a list of mocha options to use when running the
+named suite.
+
+#### options.env
+
+Type: `Function`
+Default value: A function that returns `process.env`
+
+A function that should return a custom environment hash to use when running the
+named suite.
+
+#### options.report
+
+Type: `Function`
+Default value: A function that logs the standard output followed by the standard
+error for the named suite.
+
+A function to invoke to report the results of a given suite.
+
+#### options.done
+
+Type: `Function`
+Default value: A function that does nothing.
+
+A function to invoke when all the suites have completed.  The first argument
+is a boolean indicating if all suites succeeded or not, the second is a map
+between suite name and the output of that suite (`code`, `stderr`, `stdout`).
+
+#### options.mocha
+
 Type: `String`
-Default value: `',  '`
+Default value: `./node_modules/.bin/mocha`
 
-A string value that is used to do something with whatever.
+The path to the mocha binary to invoke.
 
-#### options.punctuation
-Type: `String`
-Default value: `'.'`
+#### options.concurrency
+Type: `Number`
+Default value: `os.cpus().length * 1.5`
 
-A string value that is used to do something else with whatever else.
+Specifies the maxiumum number of concurrent test suites to run.
 
-### Usage Examples
+## Versioning
 
-#### Default Options
-In this example, the default options are used to do something with whatever. So if the `testing` file has the content `Testing` and the `123` file had the content `1 2 3`, the generated result would be `Testing, 1 2 3.`
+Releases will be numbered with the follow format:
 
-```js
-grunt.initConfig({
-  mocha_parallel: {
-    options: {},
-    files: {
-      'dest/default_options': ['src/testing', 'src/123'],
-    },
-  },
-});
-```
+`<major>.<minor>.<patch>`
 
-#### Custom Options
-In this example, custom options are used to do something else with whatever else. So if the `testing` file has the content `Testing` and the `123` file had the content `1 2 3`, the generated result in this case would be `Testing: 1 2 3 !!!`
+And constructed with the following guidelines:
 
-```js
-grunt.initConfig({
-  mocha_parallel: {
-    options: {
-      separator: ': ',
-      punctuation: ' !!!',
-    },
-    files: {
-      'dest/default_options': ['src/testing', 'src/123'],
-    },
-  },
-});
-```
+- Breaking backwards compatibility bumps the major
+- New additions without breaking backwards compatibility bumps the minor
+- Bug fixes and misc changes bump the patch
+
+For more information on semantic versioning, please visit http://semver.org/.
 
 ## Contributing
-In lieu of a formal styleguide, take care to maintain the existing coding style. Add unit tests for any new or changed functionality. Lint and test your code using [Grunt](http://gruntjs.com/).
+
+In lieu of a formal styleguide, take care to maintain the existing coding style.
+Add unit tests for any new or changed functionality. Lint and test your code
+using [Grunt](http://gruntjs.com/).
 
 ## Release History
+
 _(Nothing yet)_
