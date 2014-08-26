@@ -87,12 +87,12 @@ module.exports = function (grunt) {
   /**
    * Default reporting function: prints stdout followed by stderr
    */
-  function reportResults(code, stdout, stderr) {
+  function reportResults(suite, code, stdout, stderr) {
     if (stdout.length) {
-      console.log(stdout);
+      process.stdout.write(stdout);
     }
     if (stderr.length) {
-      console.error(stderr);
+      process.stderr.write(stderr);
     }
   }
 
