@@ -6,13 +6,13 @@ module.exports = function(suite) {
    */
   suite.on('pre-require', function(context, file, mocha) {
     var describe = context.describe;
-    var inMatchingTestSuite = false;
+    var suiteDepth = 0;
 
     context.describe = context.context = function(title, fn) {
-      if (title == process.env.MOCHA_PARALLEL_SUITE || inMatchingTestSuite) {
-        inMatchingTestSuite = true;
+      if (title == process.env.MOCHA_PARALLEL_SUITE || suiteDepth) {
+        suiteDepth++;
         describe(title, fn);
-        inMatchingTestSuite = false;
+        suiteDepth--;
       }
     }
     context.describe.skip = function(title, fn) {
