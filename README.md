@@ -61,6 +61,9 @@ Default value: A function that returns an empty list.
 A function that should return a list of mocha options to use when running the
 named suite.
 
+The first parameter will be the name of the suite or `Skipped` when running
+all the skipped tests.
+
 #### options.env
 
 Type: `Function`
@@ -68,6 +71,9 @@ Default value: A function that returns `process.env`
 
 A function that should return a custom environment hash to use when running the
 named suite.
+
+The first parameter will be the name of the suite or `Skipped` when running
+all the skipped tests.
 
 #### options.report
 

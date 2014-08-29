@@ -17,21 +17,36 @@ module.exports = function (grunt) {
   }
 
   /**
-   * Adds command-line arguments needed to make parallel execution succeed.
+   * Helper method for building mocha args lists
    */
-  function addInternalArgs(args) {
+  function addInternalArgs(args, ui) {
     if (args.indexOf('-u') >= 0 || args.indexOf('--ui') >= 0) {
       throw new Error('UI plugins are not supported by grunt-mocha-parallel');
     }
-    var filter_ui = path.resolve(__dirname, 'helpers', 'filter_ui.js');
     var cleanup = path.resolve(__dirname, 'helpers', 'cleanup.js');
-    return ['--ui', filter_ui, '--require', cleanup].concat(args);
+    return ['--ui', ui, '--require', cleanup].concat(args);
+  }
+
+  /**
+   * Adds command-line arguments needed to make parallel execution succeed.
+   */
+  function addFilterArgs(args) {
+    var ui = path.resolve(__dirname, 'helpers', 'filter_ui.js');
+    return addInternalArgs(args, ui);
+  }
+
+  /**
+   * Adds command-line arguments needed to run only the skipped tests.
+   */
+  function addSkippedArgs(args) {
+    var ui = path.resolve(__dirname, 'helpers', 'skipped_ui.js');
+    return addInternalArgs(args, ui);
   }
 
   /**
    * Adds environment variables needed to make parallel execution succeed.
    */
-  function addInternalVars(env, suite) {
+  function addFilterVars(env, suite) {
     env.MOCHA_PARALLEL_SUITE = suite;
     return env;
   }
@@ -64,8 +79,8 @@ module.exports = function (grunt) {
     var success = true;
     var results = {};
     async.eachLimit(suiteNames, options.concurrency, function(suite, callback) {
-      var args = addInternalArgs(options.args(suite));
-      var env = addInternalVars(options.env(suite), suite);
+      var args = addFilterArgs(options.args(suite));
+      var env = addFilterVars(options.env(suite), suite);
       runMocha(options.mocha, args, env, function(code, stdout, stderr) {
         options.report(suite, code, stdout, stderr);
         if (code !== 0) {
@@ -81,6 +96,19 @@ module.exports = function (grunt) {
     }, function() {
       options.done(success, results);
       onDone(success);
+    });
+  }
+
+  /**
+   * Run all skipped tests
+   */
+  function runSkippedTests(options, onDone) {
+    var name = 'Skipped';
+    var args = addSkippedArgs(options.args(name));
+    var env = options.env(name);
+    runMocha(options.mocha, args, env, function(code, stdout, stderr) {
+      options.report(name, code, stdout, stderr);
+      onDone();
     });
   }
 
@@ -114,7 +142,9 @@ module.exports = function (grunt) {
     });
 
     getTopLevelSuiteNames(options.mocha, function(names) {
-      runTestsInParallel(names, options, done);
+      runSkippedTests(options, function() {
+        runTestsInParallel(names, options, done);
+      });
     });
   });
 };
