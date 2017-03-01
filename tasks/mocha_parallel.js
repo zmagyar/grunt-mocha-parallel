@@ -7,10 +7,12 @@ module.exports = function (grunt) {
   /**
    * Enumerate and return the top-level suite names.
    */
-  function getTopLevelSuiteNames(mocha, callback) {
+  function getTopLevelSuiteNames(options, callback) {
+    var mocha = options.mocha;
     var enumerate_ui = path.resolve(__dirname, 'helpers', 'enumerate_ui.js');
-    var command = mocha + ' -u ' + enumerate_ui;
-    var enumerate = child_process.exec(command, function(code, stdout, stderr) {
+    var command = mocha + ' -u ' + enumerate_ui + ' ' + (options.args() || []).join(' ');
+
+    var enumerate = child_process.exec(command, function (code, stdout, stderr) {
       var names = stderr.replace(/^\s+|\s+$/g, '').split('\n');
       callback(names);
     });
@@ -141,7 +143,7 @@ module.exports = function (grunt) {
       concurrency: os.cpus().length * 1.5
     });
 
-    getTopLevelSuiteNames(options.mocha, function(names) {
+    getTopLevelSuiteNames(options, function(names) {
       runSkippedTests(options, function() {
         runTestsInParallel(names, options, done);
       });
